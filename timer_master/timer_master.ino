@@ -122,7 +122,7 @@ void loop() {
   unsigned int divideToMinutes = 360;
 
   
-  if (tempTime - currentTime >= divideToMinutes * 1000) {
+  if (masterClockEnabled && tempTime - currentTime >= divideToMinutes * 1000) {
     for (uint8_t timerCounter = 0; timerCounter < 6; ++timerCounter) {
       if (timerEnabled[timerCounter]) {
         timerDiplayNumbers[timerCounter]++;
