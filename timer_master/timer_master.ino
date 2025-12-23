@@ -1,10 +1,14 @@
 #include <Wire.h>
 
 volatile uint16_t timerDiplayNumbers[6] = {0,0,0,0,0,0};
+
+volatile uint16_t masterTimerNumber = 0;
+
 volatile bool timerEnabled[6] = {false,false,false,false,false,false};
 
 volatile bool masterClockEnabled = false;
 
+const uint8_t masterdisplayAddress[2] = {70,71};
 
 const uint8_t displayAddresses[6][2] = {
  {10,11},
@@ -59,10 +63,22 @@ void resetToZero() {
 
 void updateDisplay() {
 
+    uint8_t onesDigit = masterTimerNumber % 10;
+    uint8_t tensDigit = (masterTimerNumber - onesDigit) / 10;
+
+  Wire.beginTransmission(masterdisplayAddress[0]);
+  Wire.write(onesDigit);
+  Wire.endTransmission();
+
+  Wire.beginTransmission(masterdisplayAddress[1]);
+  Wire.write(tensDigit);
+  Wire.endTransmission();
+
+
   for (uint8_t timerCounter = 0; timerCounter < 6; ++timerCounter) {
 
-    uint8_t onesDigit = timerDiplayNumbers[timerCounter] % 10;
-    uint8_t tensDigit = (timerDiplayNumbers[timerCounter] - onesDigit) / 10;
+    onesDigit = timerDiplayNumbers[timerCounter] % 10;
+    tensDigit = (timerDiplayNumbers[timerCounter] - onesDigit) / 10;
 
   Wire.beginTransmission(displayAddresses[timerCounter][0]);
   Wire.write(onesDigit);
@@ -123,6 +139,7 @@ void loop() {
 
   
   if (masterClockEnabled && tempTime - currentTime >= divideToMinutes * 1000) {
+    masterTimerNumber++;
     for (uint8_t timerCounter = 0; timerCounter < 6; ++timerCounter) {
       if (timerEnabled[timerCounter]) {
         timerDiplayNumbers[timerCounter]++;

@@ -2,6 +2,8 @@
 const uint8_t segPins[7] = {16, 15, 14, 4, 3, 2, 1};
 // Mapping for common cathode display (High = ON)
 // Index 0-9 = Numbers, 10-15 = A-F
+volatile bool indicatorLED = false;
+
 const byte hexToSegments[] = {
   0b00111111, // 0
   0b00000110, // 1
@@ -28,8 +30,16 @@ void setup() {
   for (uint8_t i = 0; i < 7; i++) {
     pinMode(segPins[i], OUTPUT);
   }
+  pinMode(7, INPUT_PULLUP);
+  pinMode(11, OUTPUT);
+  attachInterrupt(7, indicatorLight, FALLING);
+  digitalWrite(11, indicatorLED);
 }
 
+void indicatorLight() {
+  indicatorLED = !indicatorLED;
+  digitalWrite(11, indicatorLED);
+}
 
 // function that executes whenever data is received from master
 // this function is registered as an event, see setup()
