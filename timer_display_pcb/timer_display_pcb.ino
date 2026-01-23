@@ -1,9 +1,9 @@
 #include <Wire.h>
-const uint8_t segPins[7] = {16, 15, 14, 4, 3, 2, 1};
+const uint8_t segPinsTens[7] = {PIN_PB3, PIN_PB4, PIN_PC3, PIN_PC1, PIN_PA7, PIN_PA5, PIN_PA1};
+const uint8_t segPinsOnes[7] = {PIN_PA4, PIN_PC2, PIN_PC0, PIN_PB2, PIN_PA6, PIN_PA2, PIN_PA3};
+
 // Mapping for common cathode display (High = ON)
 // Index 0-9 = Numbers, 10-15 = A-F
-volatile bool indicatorLED = false;
-PIN_PA0
 const byte hexToSegments[] = {
   0b00111111, // 0
   0b00000110, // 1
@@ -28,35 +28,36 @@ void setup() {
   Wire.onReceive(receiveEvent);
   // 7-segment pins as outputs
   for (uint8_t i = 0; i < 7; i++) {
-    pinMode(segPins[i], OUTPUT);
+    pinMode(segPinsOnes[i], OUTPUT);
+    pinMode(segPinsTens[i], OUTPUT);
   }
-  pinMode(7, INPUT_PULLUP);
-  pinMode(11, OUTPUT);
-  attachInterrupt(7, indicatorLight, FALLING);
-  digitalWrite(11, indicatorLED);
-}
-
-void indicatorLight() {
-  indicatorLED = !indicatorLED;
-  digitalWrite(11, indicatorLED);
 }
 
 // function that executes whenever data is received from master
 // this function is registered as an event, see setup()
 void receiveEvent(int howMany)
 {
-  int inputNumber =  Wire.read();
+  
+  uint8_t tensDigit = Wire.read();
+  uint8_t onesDigit = Wire.read();
+
   while(Wire.available()) // loop through all but the last
   {
     //clear the buffer, I never expect us to actually get here
     Wire.read();
   }
-  uint8_t pattern = hexToSegments[inputNumber];
+
+  uint8_t pattern = hexToSegments[tensDigit];
   for (uint8_t i = 0; i < 7; i++) {
-    digitalWrite(segPins[i], bitRead(pattern, i));
+    digitalWrite(segPinsTens[i], bitRead(pattern, i));
   }
 
-          // print the integer
+  pattern = hexToSegments[onesDigit];
+  for (uint8_t i = 0; i < 7; i++) {
+    digitalWrite(segPinsOnes[i], bitRead(pattern, i));
+  }
+
+
 }
 
 void loop()

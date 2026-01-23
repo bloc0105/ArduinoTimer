@@ -10,7 +10,7 @@ volatile bool masterClockEnabled = false;
 
 const uint8_t masterdisplayAddress = 10;
 
-const uint8_t displayAddresses[7] = {9,8,7,6,5,4};
+const uint8_t displayAddresses[6] = {9,8,7,6,5,4};
 
 const uint8_t enablePin[6] = {PIN_PB5,PIN_PB4,PIN_PC3,PIN_PA7,PIN_PC2,PIN_PC1};
 const uint8_t displayPin[6] = {PIN_PA1,PIN_PA6,PIN_PA5,PIN_PA4,PIN_PA3,PIN_PA2};
@@ -58,15 +58,22 @@ void resetToZero() {
 
 void updateDisplay() {
 
+    uint8_t onesDigit = masterTimerNumber % 10;
+    uint8_t tensDigit = (masterTimerNumber - onesDigit) / 10;
 
   Wire.beginTransmission(masterdisplayAddress);
-  Wire.write(masterTimerNumber);
+  Wire.write(tensDigit);
+  Wire.write(onesDigit);
   Wire.endTransmission();
 
   for (uint8_t timerCounter = 0; timerCounter < 6; ++timerCounter) {
 
+    onesDigit = timerDiplayNumbers[timerCounter] % 10;
+    tensDigit = (timerDiplayNumbers[timerCounter] - onesDigit) / 10;
+    
     Wire.beginTransmission(displayAddresses[timerCounter]);
-    Wire.write(displayAddresses[timerCounter]);
+    Wire.write(tensDigit);
+    Wire.write(onesDigit);
     Wire.endTransmission();
 
   }
