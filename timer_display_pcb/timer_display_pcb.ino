@@ -1,6 +1,7 @@
 #include <Wire.h>
-const uint8_t segPinsTens[7] = {PIN_PB3, PIN_PB4, PIN_PC3, PIN_PC1, PIN_PA7, PIN_PA5, PIN_PA1};
-const uint8_t segPinsOnes[7] = {PIN_PA4, PIN_PC2, PIN_PC0, PIN_PB2, PIN_PA6, PIN_PA2, PIN_PA3};
+
+const uint8_t segPinsOnes[7] = {PIN_PA3,PIN_PA2, PIN_PA6,PIN_PB2,PIN_PC0,PIN_PC2,PIN_PA4};
+const uint8_t segPinsTens[7] ={PIN_PA1,PIN_PA5,PIN_PA7,PIN_PC1,PIN_PC3,PIN_PB4,PIN_PB3};
 
 // Mapping for common cathode display (High = ON)
 // Index 0-9 = Numbers, 10-15 = A-F
@@ -24,7 +25,7 @@ const byte hexToSegments[] = {
 };
 
 void setup() {
-  Wire.begin();
+  Wire.begin(8);
   Wire.onReceive(receiveEvent);
   // 7-segment pins as outputs
   for (uint8_t i = 0; i < 7; i++) {

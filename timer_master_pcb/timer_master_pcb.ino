@@ -8,6 +8,8 @@ volatile bool timerEnabled[6] = {false,false,false,false,false,false};
 
 volatile bool masterClockEnabled = false;
 
+volatile bool Test_oooooga = false;
+
 const uint8_t masterdisplayAddress = 10;
 
 const uint8_t displayAddresses[6] = {9,8,7,6,5,4};
@@ -124,14 +126,19 @@ void toggleMasterEnable() {
   }
 
 
-  digitalWrite(masterEnabled, masterClockEnabled); 
+  digitalWrite(masterEnabled, masterEnable); 
 }
 
 void loop() {
   unsigned long tempTime = millis();
   unsigned int divideToMinutes = 2;
 
-  
+  // if (tempTime - currentTime >= divideToMinutes * 1000) {
+  // Test_oooooga = !Test_oooooga;
+  // digitalWrite(masterEnabled, Test_oooooga);
+  // }
+
+
   if (masterClockEnabled && tempTime - currentTime >= divideToMinutes * 1000) {
     masterTimerNumber++;
     for (uint8_t timerCounter = 0; timerCounter < 6; ++timerCounter) {
@@ -142,4 +149,5 @@ void loop() {
   updateDisplay();
   currentTime = tempTime;
   }
+
 }
