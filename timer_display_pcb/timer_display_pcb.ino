@@ -25,7 +25,7 @@ const byte hexToSegments[] = {
 };
 
 void setup() {
-  Wire.begin(8);
+  Wire.begin(7);
   Wire.onReceive(receiveEvent);
   // 7-segment pins as outputs
   for (uint8_t i = 0; i < 7; i++) {

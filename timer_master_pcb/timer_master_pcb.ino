@@ -8,8 +8,6 @@ volatile bool timerEnabled[6] = {false,false,false,false,false,false};
 
 volatile bool masterClockEnabled = false;
 
-volatile bool Test_oooooga = false;
-
 const uint8_t masterdisplayAddress = 10;
 
 const uint8_t displayAddresses[6] = {9,8,7,6,5,4};
@@ -26,7 +24,7 @@ volatile unsigned long timeDiff = 0;
 void setup() {
   Wire.begin();
 
-  pinMode(masterEnable, INPUT_PULLUP);
+  pinMode(masterEnable, INPUT);
   attachInterrupt(digitalPinToInterrupt(masterEnable), toggleMasterEnable, CHANGE);
 
   pinMode(masterReset, INPUT_PULLUP);
@@ -55,6 +53,7 @@ void resetToZero() {
   for (uint8_t timerCounter = 0; timerCounter < 6; ++timerCounter) {
         timerDiplayNumbers[timerCounter] = 0;
   }
+  masterTimerNumber = 0;
   updateDisplay();
 }
 
@@ -126,25 +125,23 @@ void toggleMasterEnable() {
   }
 
 
-  digitalWrite(masterEnabled, masterEnable); 
+  digitalWrite(masterEnabled, masterClockEnabled); 
 }
 
 void loop() {
   unsigned long tempTime = millis();
-  unsigned int divideToMinutes = 2;
-
-  // if (tempTime - currentTime >= divideToMinutes * 1000) {
-  // Test_oooooga = !Test_oooooga;
-  // digitalWrite(masterEnabled, Test_oooooga);
-  // }
-
-
+  unsigned long divideToMinutes = 360;
+  bool masterCounterEnabled = false;
   if (masterClockEnabled && tempTime - currentTime >= divideToMinutes * 1000) {
-    masterTimerNumber++;
     for (uint8_t timerCounter = 0; timerCounter < 6; ++timerCounter) {
       if (timerEnabled[timerCounter]) {
         timerDiplayNumbers[timerCounter]++;
+        masterCounterEnabled = true;
       }
+    }
+    if (masterCounterEnabled)
+    {
+      masterTimerNumber++;
     }
   updateDisplay();
   currentTime = tempTime;
